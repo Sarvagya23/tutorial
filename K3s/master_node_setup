@@ -1,0 +1,23 @@
+This file contains a list of commands that can be used to set up a running k3s master node on your local setup. 
+
+
+# This command downloads a shell script from the URL https://get.k3s.io using the curl command.The script sets up the K3s lightweight Kubernetes distribution on the system.
+1. curl -sfL https://get.k3s.io | sh - 
+
+# The export command sets the environment variable KUBECONFIG to the value /etc/rancher/k3s/k3s.yaml.
+2. export KUBECONFIG=/etc/rancher/k3s/k3s.yaml 
+
+# This command creates a directory named .kube in the user's home directory (~)
+3. mkdir -p ~/.kube 
+
+# It retrieves the raw Kubernetes configuration and outputs it to the console.
+4. sudo k3s kubectl config view --raw | tee ~/.kube/config 
+
+# The chmod command changes the permissions of the ~/.kube/config file to 600. Basically, it gives both read and write permission for the config to the user.
+5. chmod 600 ~/.kube/config 
+
+# Gets the list of nodes
+6. kubectl get nodes 
+
+# Gets the list of all the namespaces
+7. kubectl get pods --all-namespaces 
