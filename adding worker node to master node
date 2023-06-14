@@ -1,0 +1,24 @@
+In order to connect worker node to master node we can use the below command on the worker node
+
+
+A. Command to be executed on master node to see the node-token and send to the worker node
+
+# Outputs the toekn value on the terminal to look.
+1. cat /var/lib/rancher/k3s/server/node-token
+
+#The scp command is used to securely transfer files between a local host and a remote host or between two remote hosts over a Secure Shell (SSH) connection.
+This command transfers the token from the master node to a destination on the local worker node from where we can copy the token and use it in the next curl command.
+2. scp /var/lib/rancher/k3s/server/node-token <username of worker node>@<worker-node-ip-address>:<destination_folder>
+
+B. Command to be executed on the worker node
+
+#curl is used to download the script from https://get.k3s.io, ensuring silent and fail-safe behavior. 
+The INSTALL_K3S_SKIP_START environment variable is set to true, which instructs the script to skip starting the K3s service after installation. 
+The K3S_URL environment variable is set to the specified URL (https:///<master-node-ip-address>:6443) to determine where the K3s server should be accessed. 
+The K3S_TOKEN environment variable is set to a specific token value, which serves as authentication for joining a node to the K3s cluster.
+1. curl -sfL https://get.k3s.io | \
+    INSTALL_K3S_SKIP_START=true \
+    K3S_URL=https://<master-node-ip-address>:6443 \
+ K3S_TOKEN=<token obtained from the master node> \
+    sh -s - \
+    --node-label "cloud.google.com/gke-accelerator=$(curl -fs "http://metadata.google.internal/computeMetadata/v1/instance/attributes/gpu-platform" -H "Metadata-Flavor: Google")"
