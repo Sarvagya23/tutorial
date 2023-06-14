@@ -1,0 +1,58 @@
+One can use the following steps to setup on a worker node having a GPU
+
+A. First and formost we need to setup docker on the machine
+
+#This command updates the local package lists on a Debian-based system
+1. sudo apt update
+
+# This command installs the necessary packages for adding and managing software repositories and for securely downloading packages over HTTPS.
+2. sudo apt install apt-transport-https ca-certificates curl software-properties-common
+
+# This command downloads the Docker repository GPG (GNU Privacy Guard) key from https://download.docker.com/linux/ubuntu/gpg using curl.
+3. curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+# This command adds the Docker repository to the list of software repositories on the system.
+4. sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+
+# This command displays the candidate version and available versions of the Docker CE (Community Edition) package.
+5. apt-cache policy docker-ce
+
+# This command installs Docker CE (Community Edition) using the apt package manager.
+6. sudo apt install docker-ce
+
+# This command displays the current status of the Docker service. If it is active or inactive.
+7. sudo systemctl status docker
+
+# This command adds the user named "<username> (it is the username you are using on your machine)" to the "docker" user group.
+8. sudo usermod -aG docker <username>
+
+# This command switches the current user to the user named <username>.
+9. su - <username>
+
+B. Steps for installing nvidia-container-toolkit
+The NVIDIA Container Toolkit is a set of tools and libraries designed to enhance containerized GPU workloads. It includes the NVIDIA Container Runtime (nvidia-container-runtime) and the NVIDIA Docker plugin (nvidia-docker2). 
+These components enable seamless integration of GPU-accelerated applications within container environments, such as Docker or Kubernetes.
+By installing the NVIDIA Container Toolkit, you enable GPU support within container environments, allowing you to leverage the capabilities of NVIDIA GPUs for running GPU-accelerated workloads in containers.
+
+#Setup the package repository and the GPG key:
+1. distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
+      && curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+      && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
+            sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+            sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+#This command updates the local package lists on a Debian-based system
+2. sudo apt update
+
+# Installs the nvidia-container-toolkit package (and dependencies)
+3. sudo apt-get install -y nvidia-container-toolkit
+
+# Configures the Docker daemon to recognize the NVIDIA Container Runtime:
+4. sudo nvidia-ctk runtime configure --runtime=docker
+
+# Restart the Docker daemon to complete the installation after setting the default runtime:
+5. sudo systemctl restart docker
+At this point, a working setup can be tested by running a base CUDA container:
+
+# A working setup can be tested by running a base CUDA container:
+6. sudo docker run --rm --runtime=nvidia --gpus all nvidia/cuda:11.6.2-base-ubuntu20.04 nvidia-smi
