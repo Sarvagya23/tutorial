@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tensorflow-deployment2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tensorflow2
+  template:
+    metadata:
+      labels:
+        app: tensorflow2
+    spec:
+      containers:
+      - name: mnist-data
+        image: sarvagya23/mnist-fix:1.0
+        command: ["python", "/app/mnist_classification_with_lenet_5_architecture.py"]
