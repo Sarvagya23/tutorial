@@ -1,0 +1,17 @@
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
+sudo dpkg -i cuda-keyring_1.0-1_all.deb
+sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /"
+sudo apt update && sudo apt install -y datacenter-gpu-manager
+sudo systemctl enable nvidia-dcgm
+sudo systemctl start nvidia-dcgm
+dcgmi discovery -l
+wget https://go.dev/dl/go1.18.2.linux-amd64.tar.gz
+export PATH=$PATH:/usr/local/go/bin
+sudo tar -C /usr/local -xzf go1.18.2.linux-amd64.tar.gz
+go version
+git clone https://github.com/NVIDIA/dcgm-exporter.git
+cd dcgm-exporter
+make binary
+sudo PATH=$PATH make install
+sudo chmod 755 /usr/bin/dcgm-exporter
+sudo dcgm-exporter &
